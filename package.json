@@ -1,0 +1,526 @@
+{
+	"name": "line-separators",
+	"displayName": "Line Separators",
+	"description": "Improve code readability by drawing line seperators of varying colors and thicknesses between symbols.",
+	"version": "1.0.0",
+	"publisher": "roenlie",
+	"galleryBanner": {
+		"color": "#0000FF",
+		"theme": "dark"
+	},
+	"engines": {
+		"vscode": "^1.61.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"keywords": [
+		"separator",
+		"organize",
+		"navigation",
+		"symbols"
+	],
+	"extensionKind": [
+		"ui",
+		"workspace"
+	],
+	"capabilities": {
+		"virtualWorkspaces": true,
+		"untrustedWorkspaces": {
+			"supported": true
+		}
+	},
+	"icon": "images/icon.png",
+	"license": "GPL-3.0",
+	"homepage": "https://github.com/roenlie/vscode-separators/blob/master/README.md",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/roenlie/vscode-line-separators.git"
+	},
+	"bugs": {
+		"url": "https://github.com/roenlie/vscode-separators/issues"
+	},
+	"sponsor": {
+		"url": "https://github.com/sponsors/roenlie"
+	},
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"main": "./dist/extension-node.js",
+	"browser": "./dist/extension-web.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "separators.toggleVisibility",
+				"title": "%separators.commands.toggleVisibility.title%"
+			},
+			{
+				"command": "separators.selectSymbols",
+				"title": "%separators.commands.selectSymbols.title%"
+			},
+			{
+				"command": "separators.whatsNew",
+				"title": "%separators.commands.whatsNew.title%"
+			},
+			{
+				"command": "_separators.whatsNew#contextMenu",
+				"title": "%separators.commands.whatsNew#contextMenu.title%"
+			}
+		],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "_separators.whatsNew#contextMenu",
+					"when": "false"
+				}
+			],
+			"extension/context": [
+				{
+					"command": "_separators.whatsNew#contextMenu",
+					"group": "separators",
+					"when": "extension == alefragnani.separators && extensionStatus == installed"
+				}
+			]
+		},
+		"configuration": [
+			{
+				"id": "separators-general",
+				"title": "%separators.configuration.title%",
+				"properties": {
+					"separators.useOriginalGreenishSeparator": {
+						"type": "boolean",
+						"default": false,
+						"description": "%separators.configuration.useOriginalGreenishSeparator.description%"
+					},
+					"separators.maxDepth": {
+						"type": "integer",
+						"default": 0,
+						"description": "%separators.configuration.maxDepth.description%",
+						"scope": "language-overridable"
+					},
+					"separators.enabledSymbols": {
+						"type": "array",
+						"default": [
+							"Classes",
+							"Constructors",
+							"Enums",
+							"Functions",
+							"Interfaces",
+							"Methods",
+							"Namespaces",
+							"Structs",
+							"Variables"
+						],
+						"items": {
+							"type": "string",
+							"enum": [
+								"Classes",
+								"Constructors",
+								"Enums",
+								"Functions",
+								"Interfaces",
+								"Methods",
+								"Namespaces",
+								"Structs",
+								"Variables"
+							],
+							"enumDescriptions": [
+								"Enable `Methods`",
+								"Enable `Functions`",
+								"Enable `Constructors`",
+								"Enable `Classes`",
+								"Enable `Interfaces`",
+								"Enable `Enums`",
+								"Enable `Namespaces`",
+								"Enable `Structs`",
+								"Enable `Variables`"
+							]
+						},
+						"minItems": 0,
+						"maxItems": 9,
+						"uniqueItems": true,
+						"description": "%separators.configuration.enabledSymbols.description%",
+						"scope": "language-overridable"
+					}
+				}
+			},
+			{
+				"id": "separators-classes",
+				"title": "Classes",
+				"properties": {
+					"separators.classes.borderWidth": {
+						"type": "integer",
+						"default": 1,
+						"description": "%separators.configuration.classes.borderWidth.description%"
+					},
+					"separators.classes.borderStyle": {
+						"type": "string",
+						"default": "solid",
+						"enum": [
+							"solid",
+							"dotted",
+							"dashed",
+							"double"
+						],
+						"enumDescriptions": [
+							"Specifies a solid border",
+							"Specifies a dotted border",
+							"Specifies a dashed border",
+							"Specifies a double border"
+						],
+						"description": "%separators.configuration.classes.borderStyle.description%"
+					}
+				}
+			},
+			{
+				"id": "separators-constructors",
+				"title": "Constructors",
+				"properties": {
+					"separators.constructors.borderWidth": {
+						"type": "integer",
+						"default": 1,
+						"description": "%separators.configuration.constructors.borderWidth.description%"
+					},
+					"separators.constructors.borderStyle": {
+						"type": "string",
+						"default": "solid",
+						"enum": [
+							"solid",
+							"dotted",
+							"dashed",
+							"double"
+						],
+						"enumDescriptions": [
+							"Specifies a solid border",
+							"Specifies a dotted border",
+							"Specifies a dashed border",
+							"Specifies a double border"
+						],
+						"description": "%separators.configuration.constructors.borderStyle.description%"
+					}
+				}
+			},
+			{
+				"id": "separators-enums",
+				"title": "Enums",
+				"properties": {
+					"separators.enums.borderWidth": {
+						"type": "integer",
+						"default": 1,
+						"description": "%separators.configuration.enums.borderWidth.description%"
+					},
+					"separators.enums.borderStyle": {
+						"type": "string",
+						"default": "solid",
+						"enum": [
+							"solid",
+							"dotted",
+							"dashed",
+							"double"
+						],
+						"enumDescriptions": [
+							"Specifies a solid border",
+							"Specifies a dotted border",
+							"Specifies a dashed border",
+							"Specifies a double border"
+						],
+						"description": "%separators.configuration.enums.borderStyle.description%"
+					}
+				}
+			},
+			{
+				"id": "separators-functions",
+				"title": "Functions",
+				"properties": {
+					"separators.functions.ignoreCallbackInline": {
+						"type": "boolean",
+						"default": false,
+						"description": "%separators.configuration.functions.ignoreCallbackInline.description%",
+						"scope": "language-overridable"
+					},
+					"separators.functions.borderWidth": {
+						"type": "integer",
+						"default": 1,
+						"description": "%separators.configuration.functions.borderWidth.description%"
+					},
+					"separators.functions.borderStyle": {
+						"type": "string",
+						"default": "solid",
+						"enum": [
+							"solid",
+							"dotted",
+							"dashed",
+							"double"
+						],
+						"enumDescriptions": [
+							"Specifies a solid border",
+							"Specifies a dotted border",
+							"Specifies a dashed border",
+							"Specifies a double border"
+						],
+						"description": "%separators.configuration.functions.borderStyle.description%"
+					}
+				}
+			},
+			{
+				"id": "separators-interfaces",
+				"title": "Interfaces",
+				"properties": {
+					"separators.interfaces.borderWidth": {
+						"type": "integer",
+						"default": 1,
+						"description": "%separators.configuration.interfaces.borderWidth.description%"
+					},
+					"separators.interfaces.borderStyle": {
+						"type": "string",
+						"default": "solid",
+						"enum": [
+							"solid",
+							"dotted",
+							"dashed",
+							"double"
+						],
+						"enumDescriptions": [
+							"Specifies a solid border",
+							"Specifies a dotted border",
+							"Specifies a dashed border",
+							"Specifies a double border"
+						],
+						"description": "%separators.configuration.interfaces.borderStyle.description%"
+					}
+				}
+			},
+			{
+				"id": "separators-methods",
+				"title": "Methods",
+				"properties": {
+					"separators.methods.borderWidth": {
+						"type": "integer",
+						"default": 1,
+						"description": "%separators.configuration.methods.borderWidth.description%"
+					},
+					"separators.methods.borderStyle": {
+						"type": "string",
+						"default": "solid",
+						"enum": [
+							"solid",
+							"dotted",
+							"dashed",
+							"double"
+						],
+						"enumDescriptions": [
+							"Specifies a solid border",
+							"Specifies a dotted border",
+							"Specifies a dashed border",
+							"Specifies a double border"
+						],
+						"description": "%separators.configuration.methods.borderStyle.description%"
+					}
+				}
+			},
+			{
+				"id": "separators-namespaces",
+				"title": "Namespaces",
+				"properties": {
+					"separators.namespaces.borderWidth": {
+						"type": "integer",
+						"default": 1,
+						"description": "%separators.configuration.namespaces.borderWidth.description%"
+					},
+					"separators.namespaces.borderStyle": {
+						"type": "string",
+						"default": "solid",
+						"enum": [
+							"solid",
+							"dotted",
+							"dashed",
+							"double"
+						],
+						"enumDescriptions": [
+							"Specifies a solid border",
+							"Specifies a dotted border",
+							"Specifies a dashed border",
+							"Specifies a double border"
+						],
+						"description": "%separators.configuration.namespaces.borderStyle.description%"
+					}
+				}
+			},
+			{
+				"id": "separators-structs",
+				"title": "Structs",
+				"properties": {
+					"separators.structs.borderWidth": {
+						"type": "integer",
+						"default": 1,
+						"description": "%separators.configuration.structs.borderWidth.description%"
+					},
+					"separators.structs.borderStyle": {
+						"type": "string",
+						"default": "solid",
+						"enum": [
+							"solid",
+							"dotted",
+							"dashed",
+							"double"
+						],
+						"enumDescriptions": [
+							"Specifies a solid border",
+							"Specifies a dotted border",
+							"Specifies a dashed border",
+							"Specifies a double border"
+						],
+						"description": "%separators.configuration.structs.borderStyle.description%"
+					}
+				}
+			},
+			{
+				"id": "separators-variables",
+				"title": "Variables",
+				"properties": {
+					"separators.variables.borderWidth": {
+						"type": "integer",
+						"default": 1,
+						"description": "%separators.configuration.variables.borderWidth.description%"
+					},
+					"separators.variables.borderStyle": {
+						"type": "string",
+						"default": "solid",
+						"enum": [
+							"solid",
+							"dotted",
+							"dashed",
+							"double"
+						],
+						"enumDescriptions": [
+							"Specifies a solid border",
+							"Specifies a dotted border",
+							"Specifies a dashed border",
+							"Specifies a double border"
+						],
+						"description": "%separators.configuration.variables.borderStyle.description%"
+					}
+				}
+			}
+		],
+		"colors": [
+			{
+				"id": "separators.methods.borderColor",
+				"description": "%separators.colors.methods.borderColor.description%",
+				"defaults": {
+					"light": "symbolIcon.methodForeground",
+					"dark": "symbolIcon.methodForeground",
+					"highContrast": "symbolIcon.methodForeground"
+				}
+			},
+			{
+				"id": "separators.functions.borderColor",
+				"description": "%separators.colors.functions.borderColor.description%",
+				"defaults": {
+					"light": "symbolIcon.functionForeground",
+					"dark": "symbolIcon.functionForeground",
+					"highContrast": "symbolIcon.functionForeground"
+				}
+			},
+			{
+				"id": "separators.constructors.borderColor",
+				"description": "%separators.colors.constructors.borderColor.description%",
+				"defaults": {
+					"light": "symbolIcon.constructorForeground",
+					"dark": "symbolIcon.constructorForeground",
+					"highContrast": "symbolIcon.constructorForeground"
+				}
+			},
+			{
+				"id": "separators.classes.borderColor",
+				"description": "%separators.colors.classes.borderColor.description%",
+				"defaults": {
+					"light": "symbolIcon.classForeground",
+					"dark": "symbolIcon.classForeground",
+					"highContrast": "symbolIcon.classForeground"
+				}
+			},
+			{
+				"id": "separators.interfaces.borderColor",
+				"description": "%separators.colors.interfaces.borderColor.description%",
+				"defaults": {
+					"light": "symbolIcon.interfaceForeground",
+					"dark": "symbolIcon.interfaceForeground",
+					"highContrast": "symbolIcon.interfaceForeground"
+				}
+			},
+			{
+				"id": "separators.enums.borderColor",
+				"description": "%separators.colors.enums.borderColor.description%",
+				"defaults": {
+					"light": "symbolIcon.enumeratorForeground",
+					"dark": "symbolIcon.enumeratorForeground",
+					"highContrast": "symbolIcon.enumeratorForeground"
+				}
+			},
+			{
+				"id": "separators.namespaces.borderColor",
+				"description": "%separators.colors.namespaces.borderColor.description%",
+				"defaults": {
+					"light": "symbolIcon.namespaceForeground",
+					"dark": "symbolIcon.namespaceForeground",
+					"highContrast": "symbolIcon.namespaceForeground"
+				}
+			},
+			{
+				"id": "separators.structs.borderColor",
+				"description": "%separators.colors.structs.borderColor.description%",
+				"defaults": {
+					"light": "symbolIcon.structForeground",
+					"dark": "symbolIcon.structForeground",
+					"highContrast": "symbolIcon.structForeground"
+				}
+			},
+			{
+				"id": "separators.variables.borderColor",
+				"description": "%separators.colors.variables.borderColor.description%",
+				"defaults": {
+					"light": "symbolIcon.structForeground",
+					"dark": "symbolIcon.structForeground",
+					"highContrast": "symbolIcon.structForeground"
+				}
+			}
+		]
+	},
+	"eslintConfig": {
+		"extends": [
+			"vscode-ext"
+		]
+	},
+	"scripts": {
+		"build": "webpack --mode development",
+		"watch": "webpack --watch --mode development",
+		"vscode:prepublish": "webpack --mode production",
+		"webpack": "webpack --mode development",
+		"webpack-dev": "webpack --mode development --watch",
+		"compile": "tsc -p ./",
+		"lint": "eslint -c package.json --ext .ts src vscode-whats-new",
+		"pretest": "npm run compile && npm run lint",
+		"test-compile": "tsc -p ./ && npm run webpack",
+		"just-test": "node ./out/src/test/runTest.js",
+		"test": "npm run test-compile && npm run just-test"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.4",
+		"@types/mocha": "^9.0.0",
+		"@types/node": "^14.17.27",
+		"@types/vscode": "^1.61.0",
+		"@typescript-eslint/eslint-plugin": "^5.1.0",
+		"@typescript-eslint/parser": "^5.1.0",
+		"@vscode/test-electron": "^1.6.2",
+		"eslint": "^8.1.0",
+		"eslint-config-vscode-ext": "^1.1.0",
+		"mocha": "^9.1.3",
+		"semver": "^7.3.7",
+		"terser-webpack-plugin": "^5.2.4",
+		"ts-loader": "^9.2.5",
+		"typescript": "^4.4.4",
+		"webpack": "^5.52.1",
+		"webpack-cli": "^4.8.0"
+	}
+}
