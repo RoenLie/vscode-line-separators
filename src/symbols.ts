@@ -7,7 +7,9 @@ import { commands, DocumentSymbol, SymbolKind, TextDocument, window, workspace }
 import { LanguageFactory } from "./language/factory";
 
 const getSymbolsFrom = ( symbol: DocumentSymbol, level: number ): DocumentSymbol[] => {
-	const maxDepth: number = workspace.getConfiguration( "separators", window.activeTextEditor?.document ).get( "maxDepth", 0 );
+	const maxDepth: number = workspace
+		.getConfiguration( "separators", window.activeTextEditor?.document )
+		.get( "maxDepth", 0 );
 
 	if ( maxDepth !== 0 && level >= maxDepth )
 		return [ symbol ];

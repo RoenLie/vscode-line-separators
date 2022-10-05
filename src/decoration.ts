@@ -3,7 +3,10 @@
 *  Licensed under the GPLv3 License. See License.md in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { window, ThemeColor, TextEditor, Range, TextEditorDecorationType, DecorationRenderOptions, DocumentSymbol, workspace } from "vscode";
+import {
+	window, ThemeColor, TextEditor, Range, TextEditorDecorationType,
+	DecorationRenderOptions, DocumentSymbol, workspace
+} from "vscode";
 import { DEFAULT_GREENISH_COLOR } from "./constants";
 
 const createTopLineDecoration = (

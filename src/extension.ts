@@ -9,7 +9,7 @@ import * as vscode from 'vscode';
 import { DEFAULT_ENABLED_SYMBOLS } from './constants';
 import { Container } from './container';
 import { createTextEditorDecoration, updateDecorationsInActiveEditor } from './decoration';
-import { devExample } from './dev-example-text.js';
+import { devExample } from './dev-example-text';
 import { getEnabledSymbols, getSymbolKindAsKind, selectSymbols } from './selectSymbols';
 import { findSymbols } from './symbols';
 
@@ -28,7 +28,7 @@ export const activate = async ( context: vscode.ExtensionContext ) => {
 			const selectedSymbols = getEnabledSymbols();
 			symbols = await findSymbols( selectedSymbols );
 			if ( !symbols )
-				return;
+				symbols = [];
 		} else {
 			symbols = [];
 		}
@@ -57,11 +57,15 @@ export const activate = async ( context: vscode.ExtensionContext ) => {
 		symbolsDecorationsType.set( "namespaces", createTextEditorDecoration( "namespaces" ) );
 		symbolsDecorationsType.set( "structs", createTextEditorDecoration( "structs" ) );
 		symbolsDecorationsType.set( "variables", createTextEditorDecoration( "variables" ) );
+		symbolsDecorationsType.set( "modules", createTextEditorDecoration( "modules" ) );
+		symbolsDecorationsType.set( "properties", createTextEditorDecoration( "properties" ) );
 	};
 
 	createDecorations();
 
 	let activeEditor = vscode.window.activeTextEditor;
+
+	// DEMO DATA
 	//devExample( activeEditor );
 
 	let isVisible = context.workspaceState.get<boolean>( 'separators.visible', true );

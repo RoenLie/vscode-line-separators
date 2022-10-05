@@ -57,31 +57,9 @@
 			{
 				"command": "separators.selectSymbols",
 				"title": "%separators.commands.selectSymbols.title%"
-			},
-			{
-				"command": "separators.whatsNew",
-				"title": "%separators.commands.whatsNew.title%"
-			},
-			{
-				"command": "_separators.whatsNew#contextMenu",
-				"title": "%separators.commands.whatsNew#contextMenu.title%"
 			}
 		],
-		"menus": {
-			"commandPalette": [
-				{
-					"command": "_separators.whatsNew#contextMenu",
-					"when": "false"
-				}
-			],
-			"extension/context": [
-				{
-					"command": "_separators.whatsNew#contextMenu",
-					"group": "separators",
-					"when": "extension == alefragnani.separators && extensionStatus == installed"
-				}
-			]
-		},
+		"menus": {},
 		"configuration": [
 			{
 				"id": "separators-general",
@@ -109,7 +87,9 @@
 							"Methods",
 							"Namespaces",
 							"Structs",
-							"Variables"
+							"Variables",
+							"Modules",
+							"Properties"
 						],
 						"items": {
 							"type": "string",
@@ -122,7 +102,9 @@
 								"Methods",
 								"Namespaces",
 								"Structs",
-								"Variables"
+								"Variables",
+								"Modules",
+								"Properties"
 							],
 							"enumDescriptions": [
 								"Enable `Methods`",
@@ -133,11 +115,13 @@
 								"Enable `Enums`",
 								"Enable `Namespaces`",
 								"Enable `Structs`",
-								"Enable `Variables`"
+								"Enable `Variables`",
+								"Enable `Modules`",
+								"Enable `Properties`"
 							]
 						},
 						"minItems": 0,
-						"maxItems": 9,
+						"maxItems": 11,
 						"uniqueItems": true,
 						"description": "%separators.configuration.enabledSymbols.description%",
 						"scope": "language-overridable"
@@ -401,6 +385,62 @@
 						"description": "%separators.configuration.variables.borderStyle.description%"
 					}
 				}
+			},
+			{
+				"id": "separators-modules",
+				"title": "Modules",
+				"properties": {
+					"separators.modules.borderWidth": {
+						"type": "integer",
+						"default": 1,
+						"description": "%separators.configuration.modules.borderWidth.description%"
+					},
+					"separators.modules.borderStyle": {
+						"type": "string",
+						"default": "solid",
+						"enum": [
+							"solid",
+							"dotted",
+							"dashed",
+							"double"
+						],
+						"enumDescriptions": [
+							"Specifies a solid border",
+							"Specifies a dotted border",
+							"Specifies a dashed border",
+							"Specifies a double border"
+						],
+						"description": "%separators.configuration.modules.borderStyle.description%"
+					}
+				}
+			},
+			{
+				"id": "separators-properties",
+				"title": "Properties",
+				"properties": {
+					"separators.properties.borderWidth": {
+						"type": "integer",
+						"default": 1,
+						"description": "%separators.configuration.properties.borderWidth.description%"
+					},
+					"separators.properties.borderStyle": {
+						"type": "string",
+						"default": "solid",
+						"enum": [
+							"solid",
+							"dotted",
+							"dashed",
+							"double"
+						],
+						"enumDescriptions": [
+							"Specifies a solid border",
+							"Specifies a dotted border",
+							"Specifies a dashed border",
+							"Specifies a double border"
+						],
+						"description": "%separators.configuration.properties.borderStyle.description%"
+					}
+				}
 			}
 		],
 		"colors": [
@@ -479,6 +519,24 @@
 			{
 				"id": "separators.variables.borderColor",
 				"description": "%separators.colors.variables.borderColor.description%",
+				"defaults": {
+					"light": "symbolIcon.structForeground",
+					"dark": "symbolIcon.structForeground",
+					"highContrast": "symbolIcon.structForeground"
+				}
+			},
+			{
+				"id": "separators.modules.borderColor",
+				"description": "%separators.colors.modules.borderColor.description%",
+				"defaults": {
+					"light": "symbolIcon.structForeground",
+					"dark": "symbolIcon.structForeground",
+					"highContrast": "symbolIcon.structForeground"
+				}
+			},
+			{
+				"id": "separators.properties.borderColor",
+				"description": "%separators.colors.properties.borderColor.description%",
 				"defaults": {
 					"light": "symbolIcon.structForeground",
 					"dark": "symbolIcon.structForeground",

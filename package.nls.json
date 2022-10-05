@@ -32,5 +32,11 @@
 	"separators.colors.structs.borderColor.description": "Color of the border on top of Structs",
 	"separators.configuration.variables.borderWidth.description": "Width of the border on top of Variables (in px)",
 	"separators.configuration.variables.borderStyle.description": "Style of the border on top of Variables",
-	"separators.colors.variables.borderColor.description": "Color of the border on top of Variables"
+	"separators.colors.variables.borderColor.description": "Color of the border on top of Variables",
+	"separators.configuration.modules.borderWidth.description": "Width of the border on top of Modules (in px)",
+	"separators.configuration.modules.borderStyle.description": "Style of the border on top of Modules",
+	"separators.colors.modules.borderColor.description": "Color of the border on top of Modules",
+	"separators.configuration.properties.borderWidth.description": "Width of the border on top of Properties (in px)",
+	"separators.configuration.properties.borderStyle.description": "Style of the border on top of Properties",
+	"separators.colors.properties.borderColor.description": "Color of the border on top of Properties"
 }

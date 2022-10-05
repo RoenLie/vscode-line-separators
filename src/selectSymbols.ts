@@ -45,6 +45,14 @@ export async function showSelectSymbolsQuickPick( selectedSymbols: string[] ): P
 		label: "Variables",
 		picked: selectedSymbols.includes( "Variables" )
 	} );
+	allSymbols.push( {
+		label: "Modules",
+		picked: selectedSymbols.includes( "Modules" )
+	} );
+	allSymbols.push( {
+		label: "Properties",
+		picked: selectedSymbols.includes( "Properties" )
+	} );
 
 	const picked = await window.showQuickPick( allSymbols, {
 		placeHolder: "Select which symbols should have separators",
@@ -99,6 +107,10 @@ export const getSymbolKindAsKind = ( kind: string ): SymbolKind => {
 			return SymbolKind.Struct;
 		case "Variables":
 			return SymbolKind.Variable;
+		case "Modules":
+			return SymbolKind.Module;
+		case "Properties":
+			return SymbolKind.Property;
 
 		default:
 			return SymbolKind.Object;
