@@ -9,6 +9,7 @@ import * as vscode from 'vscode';
 import { DEFAULT_ENABLED_SYMBOLS } from './constants';
 import { Container } from './container';
 import { createTextEditorDecoration, updateDecorationsInActiveEditor } from './decoration';
+import { devExample } from './dev-example-text.js';
 import { getEnabledSymbols, getSymbolKindAsKind, selectSymbols } from './selectSymbols';
 import { findSymbols } from './symbols';
 
@@ -61,34 +62,7 @@ export const activate = async ( context: vscode.ExtensionContext ) => {
 	createDecorations();
 
 	let activeEditor = vscode.window.activeTextEditor;
-	activeEditor.edit( ( editbuilder ) => {
-		editbuilder.insert( new vscode.Position( 0, 0 ), `
-import test from 'path'
-
-
-class TEster {
-
-	public NEi() {
-	}
-
-	public tester = () => {
-
-	}
-
-
-}
-
-
-const Kakemann = () => {
-
-}
-
-
-function mannen() {
-
-}
-		`);
-	} );
+	//devExample( activeEditor );
 
 	let isVisible = context.workspaceState.get<boolean>( 'separators.visible', true );
 

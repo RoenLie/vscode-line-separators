@@ -70,7 +70,7 @@ export const updateDecorationsInActiveEditor = (
 			lineToCheck--;
 		}
 
-		if ( freeLines === 0 )
+		if ( freeLines <= 1 )
 			continue;
 
 		freeLines = Math.max( Math.min( 2, freeLines ), 1 );
