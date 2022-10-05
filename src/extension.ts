@@ -8,10 +8,11 @@
 import * as vscode from 'vscode';
 import { DEFAULT_ENABLED_SYMBOLS } from './constants';
 import { Container } from './container';
-import { createTextEditorDecoration, updateDecorationsInActiveEditor } from './decoration';
+import { createTextEditorDecoration, createTopLineDecoration, updateDecorationsInActiveEditor } from './decoration';
 import { devExample } from './dev-example-text';
 import { getEnabledSymbols, getSymbolKindAsKind, selectSymbols } from './selectSymbols';
-import { findSymbols } from './symbols';
+import { CustomDocumentSymbol, findSymbols } from './symbols';
+
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -23,14 +24,14 @@ export const activate = async ( context: vscode.ExtensionContext ) => {
 
 	// Evaluate (prepare the list) and DRAW
 	const updateDecorations = async () => {
-		let symbols: vscode.DocumentSymbol[] | undefined;
+		let symbols: vscode.DocumentSymbol[] = [];
+		let customSymbols: CustomDocumentSymbol[] = [];
+
 		if ( isVisible ) {
 			const selectedSymbols = getEnabledSymbols();
-			symbols = await findSymbols( selectedSymbols );
-			if ( !symbols )
-				symbols = [];
-		} else {
-			symbols = [];
+			const [ docSymbols = [], customDocSymbols = [] ] = await findSymbols( selectedSymbols );
+			symbols = docSymbols;
+			customSymbols = customDocSymbols;
 		}
 
 		for ( const symbol of DEFAULT_ENABLED_SYMBOLS ) {
@@ -40,6 +41,12 @@ export const activate = async ( context: vscode.ExtensionContext ) => {
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				symbolsDecorationsType.get( symbol.toLocaleLowerCase() )! );
 		}
+
+		updateDecorationsInActiveEditor(
+			vscode.window.activeTextEditor,
+			customSymbols,
+			symbolsDecorationsType.get( 'regions' )
+		);
 	};
 
 	const triggerUpdateDecorations = () => {
@@ -59,6 +66,7 @@ export const activate = async ( context: vscode.ExtensionContext ) => {
 		symbolsDecorationsType.set( "variables", createTextEditorDecoration( "variables" ) );
 		symbolsDecorationsType.set( "modules", createTextEditorDecoration( "modules" ) );
 		symbolsDecorationsType.set( "properties", createTextEditorDecoration( "properties" ) );
+		symbolsDecorationsType.set( "regions", createTopLineDecoration( 'hotpink', `1px`, 'solid' ) );
 	};
 
 	createDecorations();
@@ -66,7 +74,7 @@ export const activate = async ( context: vscode.ExtensionContext ) => {
 	let activeEditor = vscode.window.activeTextEditor;
 
 	// DEMO DATA
-	//devExample( activeEditor );
+	devExample( activeEditor );
 
 	let isVisible = context.workspaceState.get<boolean>( 'separators.visible', true );
 

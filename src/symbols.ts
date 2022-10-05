@@ -3,8 +3,9 @@
 *  Licensed under the GPLv3 License. See License.md in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { commands, DocumentSymbol, SymbolKind, TextDocument, window, workspace } from "vscode";
+import { commands, DocumentSymbol, Range, SymbolKind, TextDocument, window, workspace } from "vscode";
 import { LanguageFactory } from "./language/factory";
+
 
 const getSymbolsFrom = ( symbol: DocumentSymbol, level: number ): DocumentSymbol[] => {
 	const maxDepth: number = workspace
@@ -30,6 +31,7 @@ const getSymbolsFrom = ( symbol: DocumentSymbol, level: number ): DocumentSymbol
 	return symbols;
 };
 
+
 const shouldIgnore = ( symbol: DocumentSymbol, textDocument: TextDocument | undefined ): boolean => {
 	if ( symbol.kind !== SymbolKind.Function )
 		return false;
@@ -44,28 +46,68 @@ const shouldIgnore = ( symbol: DocumentSymbol, textDocument: TextDocument | unde
 	return language?.isCallback( symbol );
 };
 
-export const findSymbols = async ( symbolsToFind: SymbolKind[] ): Promise<DocumentSymbol[] | undefined> => {
-	if ( !window.activeTextEditor )
-		return [];
 
-	const docSymbols = await commands.executeCommand(
+export const findSymbols = async (
+	symbolsToFind: SymbolKind[]
+): Promise<[ docSymbols: DocumentSymbol[], customSymbols: CustomDocumentSymbol[] ]> => {
+	let docSymbols: DocumentSymbol[] = [];
+	let customSymbols: CustomDocumentSymbol[] = [];
+
+	if ( !window.activeTextEditor )
+		return [ docSymbols, customSymbols ];
+
+	docSymbols = await documentSymbolProvider( symbolsToFind );
+	customSymbols = customDocumentSymbolProvider();
+
+	return [ docSymbols, customSymbols ];
+};
+
+
+const documentSymbolProvider = async ( symbolsToFind: SymbolKind[] ) => {
+	let docSymbols = await commands.executeCommand(
 		'vscode.executeDocumentSymbolProvider',
 		window.activeTextEditor.document.uri
-	) as DocumentSymbol[];
+	) as DocumentSymbol[] ?? [];
 
-	if ( !docSymbols )
-		return undefined;
-
-	const symbols: DocumentSymbol[] = [];
 	const level = 1;
+	const symbols: DocumentSymbol[] = [];
 
 	for ( const symbol of docSymbols )
 		symbols.push( ...getSymbolsFrom( symbol, level ) );
 
-	const docSymbolsFunctionsMethods = symbols
-		? symbols.filter( symbol => symbolsToFind.includes( symbol.kind ) &&
-			!shouldIgnore( symbol, window.activeTextEditor?.document ) )
-		: undefined;
+	docSymbols = symbols.filter(
+		symbol => symbolsToFind.includes( symbol.kind ) &&
+			!shouldIgnore( symbol, window.activeTextEditor?.document )
+	);
 
-	return docSymbolsFunctionsMethods;
+	return docSymbols;
+};
+
+
+export interface CustomDocumentSymbol {
+	name: string;
+	range: Range;
+}
+
+
+const customDocumentSymbolProvider = () => {
+	const editor = window.activeTextEditor;
+	const findValue = '#region';
+
+	const foundRegions: CustomDocumentSymbol[] = [];
+
+	// get all the matches in the document
+	const fullText = editor.document.getText();
+	const matches = [ ...fullText.matchAll( new RegExp( findValue, "gm" ) ) ];
+
+	matches.forEach( ( match ) => {
+		const startPos = editor.document.positionAt( match.index );
+		const endPos = editor.document.positionAt( match.index + match[ 0 ].length );
+		foundRegions.push( {
+			name: 'region',
+			range: new Range( startPos, endPos )
+		} );
+	} );
+
+	return foundRegions;
 };

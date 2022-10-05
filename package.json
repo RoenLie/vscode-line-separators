@@ -520,27 +520,27 @@
 				"id": "separators.variables.borderColor",
 				"description": "%separators.colors.variables.borderColor.description%",
 				"defaults": {
-					"light": "symbolIcon.structForeground",
-					"dark": "symbolIcon.structForeground",
-					"highContrast": "symbolIcon.structForeground"
+					"light": "symbolIcon.variableForeground",
+					"dark": "symbolIcon.variableForeground",
+					"highContrast": "symbolIcon.variableForeground"
 				}
 			},
 			{
 				"id": "separators.modules.borderColor",
 				"description": "%separators.colors.modules.borderColor.description%",
 				"defaults": {
-					"light": "symbolIcon.structForeground",
-					"dark": "symbolIcon.structForeground",
-					"highContrast": "symbolIcon.structForeground"
+					"light": "symbolIcon.moduleForeground",
+					"dark": "symbolIcon.moduleForeground",
+					"highContrast": "symbolIcon.moduleForeground"
 				}
 			},
 			{
 				"id": "separators.properties.borderColor",
 				"description": "%separators.colors.properties.borderColor.description%",
 				"defaults": {
-					"light": "symbolIcon.structForeground",
-					"dark": "symbolIcon.structForeground",
-					"highContrast": "symbolIcon.structForeground"
+					"light": "symbolIcon.propertyForeground",
+					"dark": "symbolIcon.propertyForeground",
+					"highContrast": "symbolIcon.propertyForeground"
 				}
 			}
 		]

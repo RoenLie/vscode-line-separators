@@ -8,8 +8,9 @@ import {
 	DecorationRenderOptions, DocumentSymbol, workspace
 } from "vscode";
 import { DEFAULT_GREENISH_COLOR } from "./constants";
+import { CustomDocumentSymbol } from './symbols.js';
 
-const createTopLineDecoration = (
+export const createTopLineDecoration = (
 	borderColor: string | ThemeColor,
 	borderWidth: string,
 	borderStyle: string
@@ -48,7 +49,7 @@ export const createTextEditorDecoration = ( symbolKind: string ): TextEditorDeco
 
 export const updateDecorationsInActiveEditor = (
 	activeEditor: TextEditor | undefined,
-	symbols: DocumentSymbol[] | undefined,
+	symbols: DocumentSymbol[] | CustomDocumentSymbol[] | undefined,
 	decorationType: TextEditorDecorationType
 ) => {
 	if ( !activeEditor )
@@ -60,6 +61,7 @@ export const updateDecorationsInActiveEditor = (
 		return;
 	}
 
+	//TODO if the immediate lines above are comments, move the starting point to the first non comment line
 	const ranges: Range[] = [];
 
 	for ( const element of symbols ) {
@@ -87,4 +89,41 @@ export const updateDecorationsInActiveEditor = (
 	}
 
 	activeEditor.setDecorations( decorationType, ranges );
+};
+
+export const updateCustomSymbolDecorationInActiveEditor = (
+	activeEditor: TextEditor | undefined,
+	customSymbols: CustomDocumentSymbol[],
+	decorationType: TextEditorDecorationType
+) => {
+	if ( !activeEditor )
+		return;
+
+	const desiredRanges: Range[] = [];
+
+	for ( const symbol of customSymbols ) {
+		let freeLines = 0;
+		let lineToCheck = symbol.range.start.line - 1;
+
+		while ( lineToCheck > 0 && !window.activeTextEditor.document.getText(
+			new Range( lineToCheck, 0, lineToCheck, 10 )
+		).replace( / |\t/g, '' ) ) {
+			freeLines++;
+			lineToCheck--;
+		}
+
+		if ( freeLines <= 1 )
+			continue;
+
+		freeLines = Math.max( Math.min( 2, freeLines ), 1 );
+
+		const desiredRange = new Range(
+			symbol.range.start.line - freeLines, 0,
+			symbol.range.start.line - freeLines, 0
+		);
+
+		desiredRanges.push( desiredRange );
+	}
+
+	activeEditor.setDecorations( decorationType, desiredRanges );
 };
