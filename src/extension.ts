@@ -21,6 +21,10 @@ export const activate = async ( context: vscode.ExtensionContext ) => {
 
 	let timeout: NodeJS.Timer;
 	const symbolsDecorationsType = new Map<string, vscode.TextEditorDecorationType>();
+	let activeEditor = vscode.window.activeTextEditor;
+	let minimumFreespace = vscode.workspace
+		.getConfiguration( "separators", vscode.window.activeTextEditor?.document )
+		.get( "minEmptyLines", 2 );
 
 	// Evaluate (prepare the list) and DRAW
 	const updateDecorations = async () => {
@@ -39,13 +43,16 @@ export const activate = async ( context: vscode.ExtensionContext ) => {
 				vscode.window.activeTextEditor,
 				symbols.filter( s => s.kind === getSymbolKindAsKind( symbol ) ),
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				symbolsDecorationsType.get( symbol.toLocaleLowerCase() )! );
+				symbolsDecorationsType.get( symbol.toLocaleLowerCase() )!,
+				minimumFreespace
+			);
 		}
 
 		updateDecorationsInActiveEditor(
 			vscode.window.activeTextEditor,
 			customSymbols,
-			symbolsDecorationsType.get( 'regions' )
+			symbolsDecorationsType.get( 'regions' ),
+			minimumFreespace
 		);
 	};
 
@@ -71,10 +78,10 @@ export const activate = async ( context: vscode.ExtensionContext ) => {
 
 	createDecorations();
 
-	let activeEditor = vscode.window.activeTextEditor;
+
 
 	// DEMO DATA
-	devExample( activeEditor );
+	//devExample( activeEditor );
 
 	let isVisible = context.workspaceState.get<boolean>( 'separators.visible', true );
 
@@ -103,6 +110,10 @@ export const activate = async ( context: vscode.ExtensionContext ) => {
 
 	context.subscriptions.push( vscode.workspace.onDidChangeConfiguration( cfg => {
 		if ( cfg.affectsConfiguration( "separators" ) ) {
+			minimumFreespace = vscode.workspace
+				.getConfiguration( "separators", vscode.window.activeTextEditor?.document )
+				.get( "minEmptyLines", 2 );
+
 			symbolsDecorationsType.forEach( ( value ) => value.dispose() );
 			createDecorations();
 			updateDecorations();

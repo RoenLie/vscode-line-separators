@@ -10,6 +10,7 @@ import {
 import { DEFAULT_GREENISH_COLOR } from "./constants";
 import { CustomDocumentSymbol } from './symbols.js';
 
+
 export const createTopLineDecoration = (
 	borderColor: string | ThemeColor,
 	borderWidth: string,
@@ -25,6 +26,7 @@ export const createTopLineDecoration = (
 	return window.createTextEditorDecorationType( decorationOptions );
 };
 
+
 const useOriginalGreenishSeparator = ( symbolKind: string ): boolean => {
 	if ( ![ "methods", "functions", "constructors" ].includes( symbolKind ) )
 		return false;
@@ -32,12 +34,14 @@ const useOriginalGreenishSeparator = ( symbolKind: string ): boolean => {
 	return workspace.getConfiguration( "separators" ).get( "useOriginalGreenishSeparator", false );
 };
 
+
 const getBorderColor = ( symbolKind: string ): string | ThemeColor => {
 	if ( useOriginalGreenishSeparator( symbolKind ) )
 		return DEFAULT_GREENISH_COLOR;
 
 	return new ThemeColor( `separators.${ symbolKind }.borderColor` );
 };
+
 
 export const createTextEditorDecoration = ( symbolKind: string ): TextEditorDecorationType => {
 	const borderColor = getBorderColor( symbolKind );
@@ -47,10 +51,12 @@ export const createTextEditorDecoration = ( symbolKind: string ): TextEditorDeco
 	return createTopLineDecoration( borderColor, `${ borderWidth }px`, borderStyle );
 };
 
+
 export const updateDecorationsInActiveEditor = (
 	activeEditor: TextEditor | undefined,
 	symbols: DocumentSymbol[] | CustomDocumentSymbol[] | undefined,
-	decorationType: TextEditorDecorationType
+	decorationType: TextEditorDecorationType,
+	minimumFreespace: number,
 ) => {
 	if ( !activeEditor )
 		return;
@@ -61,28 +67,39 @@ export const updateDecorationsInActiveEditor = (
 		return;
 	}
 
-	//TODO if the immediate lines above are comments, move the starting point to the first non comment line
+	const checkLength = 50;
 	const ranges: Range[] = [];
 
 	for ( const element of symbols ) {
-		let freeLines = 0;
 		let lineToCheck = element.range.start.line - 1;
+		let paddingLines = 0;
 
-		while ( lineToCheck > 0 && !window.activeTextEditor.document.getText(
-			new Range( lineToCheck, 0, lineToCheck, 10 )
-		).replace( / |\t/g, '' ) ) {
-			freeLines++;
-			lineToCheck--;
+		const lineText = lineRangeTextTrimmed( new Range( lineToCheck, 0, lineToCheck, checkLength ) );
+		if ( lineText ) {
+			const lines = getContentUpwardsUntilBlankLine( new Range( lineToCheck, 0, lineToCheck, checkLength ) );
+
+			const isSingleComments = lines.every( line => EXPR_SINGLELINE_COMMENT.test( line ) );
+			const isMultilineComment = EXPR_MULTILINE_COMMENT.test( lines.join( ' ' ) );
+			const isRegionComment = lines.some( line => EXPR_REGION_COMMENT.test( line ) );
+
+			if ( !isRegionComment && ( isSingleComments || isMultilineComment ) ) {
+				paddingLines = lines.length;
+				lineToCheck = lineToCheck - paddingLines;
+			} else {
+				continue;
+			}
 		}
 
-		if ( freeLines <= 1 )
+		let freeLines = countEmptyLinesUpwards( new Range( lineToCheck, 0, lineToCheck, checkLength ) );
+		if ( freeLines < minimumFreespace )
 			continue;
 
-		freeLines = Math.max( Math.min( 2, freeLines ), 1 );
+		//freeLines = Math.max( 2, Math.ceil( freeLines / 2 ) );
+		freeLines = minimumFreespace;
 
 		const desiredRange = new Range(
-			element.range.start.line - freeLines, 0,
-			element.range.start.line - freeLines, 0
+			element.range.start.line - paddingLines - freeLines, 0,
+			element.range.start.line - paddingLines - freeLines, 0
 		);
 
 		ranges.push( desiredRange );
@@ -91,39 +108,44 @@ export const updateDecorationsInActiveEditor = (
 	activeEditor.setDecorations( decorationType, ranges );
 };
 
-export const updateCustomSymbolDecorationInActiveEditor = (
-	activeEditor: TextEditor | undefined,
-	customSymbols: CustomDocumentSymbol[],
-	decorationType: TextEditorDecorationType
-) => {
-	if ( !activeEditor )
-		return;
 
-	const desiredRanges: Range[] = [];
+const lineRangeTextTrimmed = ( range: Range ) => {
+	return window.activeTextEditor.document.getText( range ).replace( / |\t/g, '' );
+};
 
-	for ( const symbol of customSymbols ) {
-		let freeLines = 0;
-		let lineToCheck = symbol.range.start.line - 1;
 
-		while ( lineToCheck > 0 && !window.activeTextEditor.document.getText(
-			new Range( lineToCheck, 0, lineToCheck, 10 )
-		).replace( / |\t/g, '' ) ) {
-			freeLines++;
-			lineToCheck--;
-		}
+const EXPR_MULTILINE_COMMENT = /\/\*.*\*\//;
+const EXPR_SINGLELINE_COMMENT = /\/\/.*/;
+const EXPR_REGION_COMMENT = /#region/;
 
-		if ( freeLines <= 1 )
-			continue;
 
-		freeLines = Math.max( Math.min( 2, freeLines ), 1 );
+const getContentUpwardsUntilBlankLine = ( range: Range, checkLength = 50 ) => {
+	const lines: string[] = [];
 
-		const desiredRange = new Range(
-			symbol.range.start.line - freeLines, 0,
-			symbol.range.start.line - freeLines, 0
-		);
+	let lineToCheck = range.start.line;
+	let lineText = lineRangeTextTrimmed( new Range( lineToCheck, 0, lineToCheck, checkLength ) );
 
-		desiredRanges.push( desiredRange );
+	while ( lineToCheck > 0 && lineText ) {
+		lines.push( lineText );
+		lineToCheck--;
+		lineText = lineRangeTextTrimmed( new Range( lineToCheck, 0, lineToCheck, checkLength ) );
 	}
 
-	activeEditor.setDecorations( decorationType, desiredRanges );
+	return lines;
+};
+
+
+const countEmptyLinesUpwards = ( range: Range, checkLength = 50 ) => {
+	let emptyLines = 0;
+
+	let lineToCheck = range.start.line;
+	let lineText = lineRangeTextTrimmed( new Range( lineToCheck, 0, lineToCheck, checkLength ) );
+
+	while ( lineToCheck >= 0 && !lineText ) {
+		emptyLines++;
+		lineToCheck--;
+		lineText = lineRangeTextTrimmed( new Range( lineToCheck, 0, lineToCheck, checkLength ) );
+	}
+
+	return emptyLines;
 };

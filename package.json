@@ -76,6 +76,12 @@
 						"description": "%separators.configuration.maxDepth.description%",
 						"scope": "language-overridable"
 					},
+					"separators.minEmptyLines": {
+						"type": "integer",
+						"default": 2,
+						"description": "%separators.configuration.minEmptyLines.description%",
+						"scope": "language-overridable"
+					},
 					"separators.enabledSymbols": {
 						"type": "array",
 						"default": [
