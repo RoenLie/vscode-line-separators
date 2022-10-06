@@ -48,7 +48,8 @@ const shouldIgnore = ( symbol: DocumentSymbol, textDocument: TextDocument | unde
 
 
 export const findSymbols = async (
-	symbolsToFind: SymbolKind[]
+	symbolsToFind: SymbolKind[],
+	findRegions: boolean
 ): Promise<[ docSymbols: DocumentSymbol[], customSymbols: CustomDocumentSymbol[] ]> => {
 	let docSymbols: DocumentSymbol[] = [];
 	let customSymbols: CustomDocumentSymbol[] = [];
@@ -57,7 +58,9 @@ export const findSymbols = async (
 		return [ docSymbols, customSymbols ];
 
 	docSymbols = await documentSymbolProvider( symbolsToFind );
-	customSymbols = customDocumentSymbolProvider();
+
+	if ( findRegions )
+		customSymbols = customDocumentSymbolProvider();
 
 	return [ docSymbols, customSymbols ];
 };

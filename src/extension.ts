@@ -10,7 +10,7 @@ import { DEFAULT_ENABLED_SYMBOLS } from './constants';
 import { Container } from './container';
 import { createTextEditorDecoration, createTopLineDecoration, updateDecorationsInActiveEditor } from './decoration';
 import { devExample } from './dev-example-text';
-import { getEnabledSymbols, getSymbolKindAsKind, selectSymbols } from './selectSymbols';
+import { getCustomEnabledSymbols, getEnabledSymbols, getSymbolKindAsKind, selectSymbols } from './selectSymbols';
 import { CustomDocumentSymbol, findSymbols } from './symbols';
 
 
@@ -33,7 +33,13 @@ export const activate = async ( context: vscode.ExtensionContext ) => {
 
 		if ( isVisible ) {
 			const selectedSymbols = getEnabledSymbols();
-			const [ docSymbols = [], customDocSymbols = [] ] = await findSymbols( selectedSymbols );
+			const selectedCustomSymbols = getCustomEnabledSymbols();
+
+			const [ docSymbols = [], customDocSymbols = [] ] = await findSymbols(
+				selectedSymbols,
+				selectedCustomSymbols.includes( 'regions' )
+			);
+
 			symbols = docSymbols;
 			customSymbols = customDocSymbols;
 		}

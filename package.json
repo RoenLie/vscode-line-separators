@@ -82,6 +82,10 @@
 						"description": "%separators.configuration.minEmptyLines.description%",
 						"scope": "language-overridable"
 					},
+					"separators.enabledCustomSymbols": {
+						"type": "array",
+						"default": []
+					},
 					"separators.enabledSymbols": {
 						"type": "array",
 						"default": [

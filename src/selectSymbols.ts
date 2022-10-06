@@ -6,6 +6,7 @@
 import { QuickPickItem, SymbolKind, window, workspace } from "vscode";
 import { areEquivalent } from "./array";
 import { DEFAULT_ENABLED_SYMBOLS } from "./constants";
+import { CustomDocumentSymbol } from './symbols.js';
 
 export async function showSelectSymbolsQuickPick( selectedSymbols: string[] ): Promise<string[] | undefined> {
 	const allSymbols: QuickPickItem[] = [];
@@ -123,4 +124,12 @@ export const getEnabledSymbols = (): SymbolKind[] => {
 		.get( "enabledSymbols", DEFAULT_ENABLED_SYMBOLS );
 
 	return symbols.map( symbol => getSymbolKindAsKind( symbol ) );
+};
+
+export const getCustomEnabledSymbols = (): string[] => {
+	const symbols = workspace
+		.getConfiguration( "separators", window.activeTextEditor?.document )
+		.get( "enabledCustomSymbols", [] );
+
+	return symbols;
 };
