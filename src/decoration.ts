@@ -7,7 +7,7 @@ import {
 	window, ThemeColor, TextEditor, Range, TextEditorDecorationType,
 	DecorationRenderOptions, DocumentSymbol, workspace
 } from "vscode";
-import { DEFAULT_GREENISH_COLOR } from "./constants";
+import { DEFAULT_GREENISH_COLOR, EXPR_MULTILINE_COMMENT, EXPR_REGION_COMMENT, EXPR_SINGLELINE_COMMENT } from "./constants";
 import { CustomDocumentSymbol } from './symbols.js';
 
 
@@ -74,9 +74,9 @@ export const updateDecorationsInActiveEditor = (
 		let lineToCheck = element.range.start.line - 1;
 		let paddingLines = 0;
 
-		const lineText = lineRangeTextTrimmed( new Range( lineToCheck, 0, lineToCheck, checkLength ) );
+		const lineText = lineRangeTextTrimmed( lineToCheck, checkLength );
 		if ( lineText ) {
-			const lines = getContentUpwardsUntilBlankLine( new Range( lineToCheck, 0, lineToCheck, checkLength ) );
+			const lines = getContentUpwardsUntilBlankLine( lineToCheck, checkLength );
 
 			const isSingleComments = lines.every( line => EXPR_SINGLELINE_COMMENT.test( line ) );
 			const isMultilineComment = EXPR_MULTILINE_COMMENT.test( lines.join( ' ' ) );
@@ -90,17 +90,12 @@ export const updateDecorationsInActiveEditor = (
 			}
 		}
 
-		let freeLines = countEmptyLinesUpwards( new Range( lineToCheck, 0, lineToCheck, checkLength ) );
+		const freeLines = countEmptyLinesUpwards( lineToCheck, checkLength );
 		if ( freeLines < minimumFreespace )
 			continue;
 
-		//freeLines = Math.max( 2, Math.ceil( freeLines / 2 ) );
-		freeLines = minimumFreespace;
-
-		const desiredRange = new Range(
-			element.range.start.line - paddingLines - freeLines, 0,
-			element.range.start.line - paddingLines - freeLines, 0
-		);
+		const lineNumber = Math.max( 0, element.range.start.line - paddingLines - minimumFreespace );
+		const desiredRange = new Range( lineNumber, 0, lineNumber, 0 );
 
 		ranges.push( desiredRange );
 	}
@@ -109,42 +104,42 @@ export const updateDecorationsInActiveEditor = (
 };
 
 
-const lineRangeTextTrimmed = ( range: Range ) => {
+const lineRangeTextTrimmed = ( linenr: number, checkLength = 50 ) => {
+	linenr = Math.max( 0, linenr );
+	const range = new Range( linenr, 0, linenr, checkLength );
+
 	return window.activeTextEditor.document.getText( range ).replace( / |\t/g, '' );
 };
 
 
-const EXPR_MULTILINE_COMMENT = /\/\*.*\*\//;
-const EXPR_SINGLELINE_COMMENT = /\/\/.*/;
-const EXPR_REGION_COMMENT = /#region/;
-
-
-const getContentUpwardsUntilBlankLine = ( range: Range, checkLength = 50 ) => {
+const getContentUpwardsUntilBlankLine = ( linenr: number, checkLength = 50 ) => {
+	linenr = Math.max( 0, linenr );
 	const lines: string[] = [];
 
-	let lineToCheck = range.start.line;
-	let lineText = lineRangeTextTrimmed( new Range( lineToCheck, 0, lineToCheck, checkLength ) );
+	let lineToCheck = linenr;
+	let lineText = lineRangeTextTrimmed( lineToCheck, checkLength );
 
 	while ( lineToCheck > 0 && lineText ) {
-		lines.push( lineText );
+		lines.unshift( lineText );
 		lineToCheck--;
-		lineText = lineRangeTextTrimmed( new Range( lineToCheck, 0, lineToCheck, checkLength ) );
+		lineText = lineRangeTextTrimmed( lineToCheck, checkLength );
 	}
 
 	return lines;
 };
 
 
-const countEmptyLinesUpwards = ( range: Range, checkLength = 50 ) => {
+const countEmptyLinesUpwards = ( linenr: number, checkLength = 50 ) => {
+	linenr = Math.max( 0, linenr );
 	let emptyLines = 0;
 
-	let lineToCheck = range.start.line;
-	let lineText = lineRangeTextTrimmed( new Range( lineToCheck, 0, lineToCheck, checkLength ) );
+	let lineToCheck = linenr;
+	let lineText = lineRangeTextTrimmed( lineToCheck, checkLength );
 
 	while ( lineToCheck >= 0 && !lineText ) {
 		emptyLines++;
 		lineToCheck--;
-		lineText = lineRangeTextTrimmed( new Range( lineToCheck, 0, lineToCheck, checkLength ) );
+		lineText = lineRangeTextTrimmed( lineToCheck, checkLength );
 	}
 
 	return emptyLines;

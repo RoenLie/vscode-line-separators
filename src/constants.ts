@@ -3,6 +3,7 @@
 *  Licensed under the GPLv3 License. See License.md in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
+
 export const DEFAULT_ENABLED_SYMBOLS = [
 	"Classes", "Constructors", "Enums",
 	"Functions", "Interfaces", "Methods",
@@ -10,11 +11,23 @@ export const DEFAULT_ENABLED_SYMBOLS = [
 	"Modules", "Properties"
 ];
 
+
 export const DEFAULT_GREENISH_COLOR = "#65EAB9";
+
 
 export const JAVASCRIPT_TYPESCRIPT_LANGUAGE_IDS = [
 	"javascript", "javascripreact",
 	"typescript", "typescriptreact"
 ];
 
+
 export const LUA_LANGUAGE_IDS = [ "lua" ];
+
+
+export const EXPR_MULTILINE_COMMENT = /^\/\*.*\*\//;
+
+
+export const EXPR_SINGLELINE_COMMENT = /^\/\/.*/;
+
+
+export const EXPR_REGION_COMMENT = /#region/;

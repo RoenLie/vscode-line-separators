@@ -78,8 +78,6 @@ export const activate = async ( context: vscode.ExtensionContext ) => {
 
 	createDecorations();
 
-
-
 	// DEMO DATA
 	//devExample( activeEditor );
 
