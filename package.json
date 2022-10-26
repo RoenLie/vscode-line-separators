@@ -561,6 +561,8 @@
 		]
 	},
 	"scripts": {
+		"package": "vsce package",
+		"installextension": "code --install-extension line-separators-1.0.0.vsix",
 		"build": "webpack --mode development",
 		"watch": "webpack --watch --mode development",
 		"vscode:prepublish": "webpack --mode production",

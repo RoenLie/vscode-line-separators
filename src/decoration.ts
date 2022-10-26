@@ -1,8 +1,3 @@
-/*---------------------------------------------------------------------------------------------
-*  Copyright (c) Alessandro Fragnani. All rights reserved.
-*  Licensed under the GPLv3 License. See License.md in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
-
 import {
 	window, ThemeColor, TextEditor, Range, TextEditorDecorationType,
 	DecorationRenderOptions, DocumentSymbol, workspace
@@ -104,7 +99,10 @@ export const updateDecorationsInActiveEditor = (
 };
 
 
-const lineRangeTextTrimmed = ( linenr: number, checkLength = 50 ) => {
+const DEFAULT_LINE_CHECK_LENGTH = 300;
+
+
+const lineRangeTextTrimmed = ( linenr: number, checkLength = DEFAULT_LINE_CHECK_LENGTH ) => {
 	linenr = Math.max( 0, linenr );
 	const range = new Range( linenr, 0, linenr, checkLength );
 
@@ -112,7 +110,7 @@ const lineRangeTextTrimmed = ( linenr: number, checkLength = 50 ) => {
 };
 
 
-const getContentUpwardsUntilBlankLine = ( linenr: number, checkLength = 50 ) => {
+const getContentUpwardsUntilBlankLine = ( linenr: number, checkLength = DEFAULT_LINE_CHECK_LENGTH ) => {
 	linenr = Math.max( 0, linenr );
 	const lines: string[] = [];
 
@@ -129,7 +127,7 @@ const getContentUpwardsUntilBlankLine = ( linenr: number, checkLength = 50 ) => 
 };
 
 
-const countEmptyLinesUpwards = ( linenr: number, checkLength = 50 ) => {
+const countEmptyLinesUpwards = ( linenr: number, checkLength = DEFAULT_LINE_CHECK_LENGTH ) => {
 	linenr = Math.max( 0, linenr );
 	let emptyLines = 0;
 

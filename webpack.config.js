@@ -1,9 +1,3 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Alessandro Fragnani. All rights reserved.
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the GPLv3 License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-
 //@ts-check
 
 'use strict';
@@ -31,7 +25,7 @@ const config = {
             }
         })],
     },
-    
+
     devtool: 'source-map',
     externals: {
         vscode: "commonjs vscode" // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
